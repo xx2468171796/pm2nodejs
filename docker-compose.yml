@@ -1,0 +1,17 @@
+services:
+  pm2-web-manager:
+    build: .
+    container_name: pm2-web-manager
+    ports:
+      - "3000:3000"
+    volumes:
+      - pm2data:/app/data
+    environment:
+      - PORT=3000
+      - DB_PATH=/app/data/pm2manager.db
+      # - JWT_SECRET=your-secret-here
+      # - ENCRYPTION_KEY=your-32-char-key-here
+    restart: unless-stopped
+
+volumes:
+  pm2data:
