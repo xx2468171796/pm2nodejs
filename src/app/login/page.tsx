@@ -39,13 +39,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-950 via-background to-purple-950">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-blue-50">
+      <Card className="w-full max-w-md shadow-lg border border-slate-200/60">
         <CardHeader className="flex flex-col gap-1 items-center pt-8 pb-2">
-          <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <div className="text-3xl font-bold text-slate-800">
             PM2 Manager
           </div>
-          <p className="text-default-500 text-sm">轻量级 PM2 进程管理工具</p>
+          <p className="text-slate-400 text-sm">轻量级 PM2 进程管理工具</p>
         </CardHeader>
         <CardBody className="px-8 pb-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -79,7 +79,7 @@ export default function LoginPage() {
               登录
             </Button>
           </form>
-          <p className="text-default-400 text-xs text-center mt-4">
+          <p className="text-slate-400 text-xs text-center mt-4">
             默认账户: admin / admin
           </p>
         </CardBody>

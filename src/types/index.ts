@@ -7,11 +7,21 @@ export interface PM2Process {
   uptime: number;
   cpu: number;
   memory: number;
+  autorestart: boolean;
+  watch: boolean;
+  script: string;
   pm2_env?: {
     exec_mode: string;
     node_version: string;
     pm_exec_path: string;
   };
+}
+
+export interface Snapshot {
+  id: string;
+  name: string;
+  createdAt: string;
+  processCount: number;
 }
 
 export interface Machine {

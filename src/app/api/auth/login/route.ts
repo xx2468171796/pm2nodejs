@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true, data: { username: user.username, isDefaultPassword: isDefaultPwd } });
     response.cookies.set("pm2_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",

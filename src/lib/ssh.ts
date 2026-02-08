@@ -42,10 +42,12 @@ export function executeSSHCommand(machineId: number, command: string): Promise<s
       reject(new Error("SSH connection timeout (10s)"));
     }, 10000);
 
+    const wrappedCommand = `source ~/.bashrc 2>/dev/null; source ~/.profile 2>/dev/null; export PATH=$PATH:/usr/local/bin:/usr/bin:$HOME/.npm-global/bin; ${command}`;
+
     conn
       .on("ready", () => {
         clearTimeout(timeout);
-        conn.exec(command, (err, stream) => {
+        conn.exec(wrappedCommand, (err, stream) => {
           if (err) {
             conn.end();
             reject(err);

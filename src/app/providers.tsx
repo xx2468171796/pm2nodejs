@@ -8,7 +8,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   return (
-    <NextThemesProvider attribute="class" defaultTheme="dark">
+    <NextThemesProvider attribute="class" defaultTheme="light">
       <HeroUIProvider navigate={router.push}>
         {children}
       </HeroUIProvider>

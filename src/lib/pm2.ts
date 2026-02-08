@@ -17,16 +17,22 @@ export async function listProcesses(): Promise<PM2Process[]> {
   try {
     const output = await execCommand("pm2", ["jlist"]);
     const raw = JSON.parse(output);
-    return raw.map((p: Record<string, unknown>) => ({
-      pm_id: p.pm_id,
-      name: p.name,
-      pid: p.pid,
-      status: (p.pm2_env as Record<string, unknown>)?.status || "stopped",
-      restart_time: (p.pm2_env as Record<string, unknown>)?.restart_time || 0,
-      uptime: (p.pm2_env as Record<string, unknown>)?.pm_uptime || 0,
-      cpu: (p.monit as Record<string, unknown>)?.cpu || 0,
-      memory: (p.monit as Record<string, unknown>)?.memory || 0,
-    }));
+    return raw.map((p: Record<string, unknown>) => {
+      const env = p.pm2_env as Record<string, unknown> || {};
+      return {
+        pm_id: p.pm_id,
+        name: p.name,
+        pid: p.pid,
+        status: env.status || "stopped",
+        restart_time: env.restart_time || 0,
+        uptime: env.pm_uptime || 0,
+        cpu: (p.monit as Record<string, unknown>)?.cpu || 0,
+        memory: (p.monit as Record<string, unknown>)?.memory || 0,
+        autorestart: env.autorestart !== false,
+        watch: !!env.watch,
+        script: (env.pm_exec_path as string) || "",
+      };
+    });
   } catch (err) {
     throw new Error(`PM2 not available: ${(err as Error).message}`);
   }
@@ -50,4 +56,16 @@ export async function deleteProcess(id: number | string): Promise<string> {
 
 export async function getProcessLogs(id: number | string, lines = 100): Promise<string> {
   return execCommand("pm2", ["logs", String(id), "--lines", String(lines), "--nostream"]);
+}
+
+export async function saveProcessList(): Promise<string> {
+  return execCommand("pm2", ["save"]);
+}
+
+export async function setupStartup(): Promise<string> {
+  return execCommand("pm2", ["startup", "systemd", "-u", "root", "--hp", "/root"]);
+}
+
+export async function removeStartup(): Promise<string> {
+  return execCommand("pm2", ["unstartup", "systemd"]);
 }

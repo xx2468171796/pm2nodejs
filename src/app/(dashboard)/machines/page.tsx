@@ -19,6 +19,8 @@ export default function MachinesPage() {
   const [form, setForm] = useState<MachineFormData>(emptyForm);
   const [formError, setFormError] = useState("");
   const [testResults, setTestResults] = useState<Record<number, string>>({});
+  const [setupLoading, setSetupLoading] = useState<number | null>(null);
+  const [setupLog, setSetupLog] = useState<Record<number, string>>({});
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function fetchMachines() {
@@ -83,6 +85,23 @@ export default function MachinesPage() {
     fetchMachines();
   }
 
+  async function handleSetup(id: number) {
+    setSetupLoading(id);
+    setSetupLog((prev) => ({ ...prev, [id]: "正在安装环境，请稍候（可能需要1-2分钟）..." }));
+    try {
+      const res = await fetch(`/api/machines/${id}/setup`, { method: "POST" });
+      const data = await res.json();
+      setSetupLog((prev) => ({
+        ...prev,
+        [id]: data.success ? `✅ 安装完成\n${data.data?.log || ""}` : `❌ ${data.error}\n${data.data?.log || ""}`,
+      }));
+    } catch {
+      setSetupLog((prev) => ({ ...prev, [id]: "❌ 安装失败：网络错误" }));
+    } finally {
+      setSetupLoading(null);
+    }
+  }
+
   async function handleTest(id: number) {
     setTestResults((prev) => ({ ...prev, [id]: "测试中..." }));
     try {
@@ -133,11 +152,19 @@ export default function MachinesPage() {
                   {testResults[m.id]}
                 </p>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button size="sm" color="primary" variant="flat" onPress={() => handleTest(m.id)}>测试连接</Button>
+                <Button size="sm" color="success" variant="flat"
+                  isLoading={setupLoading === m.id}
+                  onPress={() => handleSetup(m.id)}>安装环境</Button>
                 <Button size="sm" variant="flat" onPress={() => openEdit(m)}>编辑</Button>
                 <Button size="sm" color="danger" variant="flat" onPress={() => handleDelete(m.id)}>删除</Button>
               </div>
+              {setupLog[m.id] && (
+                <pre className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-40 overflow-auto whitespace-pre-wrap font-mono text-slate-600">
+                  {setupLog[m.id]}
+                </pre>
+              )}
             </CardBody>
           </Card>
         ))}

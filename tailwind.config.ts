@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-import { heroui } from "@heroui/react";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { heroui } = require("@heroui/react");
 
 const config: Config = {
   content: [
